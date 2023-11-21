@@ -8,7 +8,7 @@ def main():
     game_engine = GameEngine()
     while game_engine.running:
         game_engine.event_loop()
-        game_engine.draw_board()
+        game_engine.chessboard.draw_board()
         game_engine.draw_pieces()
         pygame.display.flip()
         clock.tick(60)

@@ -6,6 +6,9 @@ WIDTH, HEIGHT = 800, 800  # Size of the window
 ROWS, COLS = 8, 8  # Number of rows and columns
 SQUARE_SIZE = WIDTH // COLS  # Size of each square
 
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
 class ChessSquare:
     def __init__(self, x, y, color, label):
         self.rect = pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE)
@@ -44,3 +47,32 @@ class ChessPiece:
         new_y = nearest_row * SQUARE_SIZE
 
         self.move((new_x, new_y))
+
+def chessboard_squares():
+    files = 'abcdefgh'
+    ranks = '12345678'
+
+    for file in files:
+        for rank in ranks:
+            yield file + rank
+            
+class ChessBoard:
+    def __init__(self, screen):
+        self.screen = screen
+        self.create_board()
+    def create_board(self):
+        self.board = []
+        chessboard_gen = chessboard_squares()
+        for row in range(ROWS):
+            board_row = []
+            for col in range(COLS):
+                x = col * SQUARE_SIZE
+                y = row * SQUARE_SIZE
+                color = WHITE if (row + col) % 2 == 0 else BLACK
+                board_row.append(ChessSquare(x, y, color, next(chessboard_gen)))
+            self.board.append(board_row)
+        
+    def draw_board(self):
+        for row in self.board:
+            for square in row:
+                square.draw(self.screen)
