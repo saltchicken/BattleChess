@@ -1,6 +1,6 @@
 import pygame, os
 import chess
-from chess_pieces import ChessPiece, ChessSquare, ChessBoard
+from chess_classes import ChessPiece, ChessSquare, ChessBoard
 
 # TODO: Better way to declare this
 WIDTH, HEIGHT = 800, 800  # Size of the window
