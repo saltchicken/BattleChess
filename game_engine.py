@@ -31,7 +31,7 @@ class GameEngine:
                     self.images[piece] = pygame.transform.scale(pygame.image.load(os.path.join("images", piece + ".png")), (SQUARE_SIZE, SQUARE_SIZE))
                 row = index // 16
                 column = (index // 2) % 8
-                piece_obj = ChessPiece(self.images[piece], (column * SQUARE_SIZE, (row * SQUARE_SIZE)))
+                piece_obj = ChessPiece(self.images[piece], row, column)
                 self.pieces.append(piece_obj)
                 self.chessboard.board[row][column].occupied = piece_obj
         
@@ -51,15 +51,22 @@ class GameEngine:
                         if square.rect.collidepoint(x, y):
                             print(square.label)
                             print(square.occupied)
-                for piece_obj in self.pieces:
-                    if piece_obj.rect.collidepoint(event.pos):
-                        self.selected_piece = piece_obj
-                        self.offset_x = piece_obj.position[0] - x
-                        self.offset_y = piece_obj.position[1] - y
-                        break
+                            if square.occupied:
+                                self.selected_piece = square.occupied
+                                self.offset_x = square.occupied.position[0] - x
+                                self.offset_y = square.occupied.position[1] - y
             elif event.type == pygame.MOUSEBUTTONUP:
+                x, y = event.pos
                 if self.selected_piece:
-                    self.selected_piece.snap_to_grid((self.offset_x, self.offset_y))
+                    for row in self.chessboard.board:
+                        for square in row:
+                            if square.rect.collidepoint(x, y):
+                                if square.occupied:
+                                    self.selected_piece.move((self.selected_piece.column * SQUARE_SIZE, self.selected_piece.row * SQUARE_SIZE))
+                                    # Additional logic for captures
+                                else:
+                                    self.selected_piece.snap_to_grid((self.offset_x, self.offset_y))
+                                    # change row, column, and square ownership
                     self.selected_piece = None
             elif event.type == pygame.MOUSEMOTION:
                 if self.selected_piece:

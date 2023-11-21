@@ -12,10 +12,12 @@ BLACK = (0, 100, 0)
 
 
 class ChessPiece:
-    def __init__(self, image, position):
+    def __init__(self, image, row, column):
         self.image = image
-        self.position = position  # Position is a tuple (x, y)
+        self.position = (column * SQUARE_SIZE, (row * SQUARE_SIZE)) # Position is a tuple (x, y)
         self.rect = pygame.Rect(self.position[0], self.position[1], SQUARE_SIZE, SQUARE_SIZE)
+        self.row = row
+        self.column = column
 
     def draw(self, screen):
         screen.blit(self.image, self.position)
