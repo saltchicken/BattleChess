@@ -6,6 +6,16 @@ WIDTH, HEIGHT = 800, 800  # Size of the window
 ROWS, COLS = 8, 8  # Number of rows and columns
 SQUARE_SIZE = WIDTH // COLS  # Size of each square
 
+class ChessSquare:
+    def __init__(self, x, y, color, label):
+        self.rect = pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE)
+        self.color = color
+        self.label = label
+        self.occupied = False  # You can add more properties as needed
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect)
+
 
 class ChessPiece:
     def __init__(self, image, position):

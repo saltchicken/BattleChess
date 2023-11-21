@@ -1,5 +1,5 @@
 import pygame, os
-from chess_pieces import ChessPiece
+from chess_pieces import ChessPiece, ChessSquare
 
 # TODO: Better way to declare this
 WIDTH, HEIGHT = 800, 800  # Size of the window
@@ -9,11 +9,20 @@ SQUARE_SIZE = WIDTH // COLS
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
+def chessboard_squares():
+    files = 'abcdefgh'
+    ranks = '12345678'
+
+    for file in files:
+        for rank in ranks:
+            yield file + rank
+
 class GameEngine:
     def __init__(self) -> None:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Chess Board")
         self.running = True
+        self.create_board()
         self.images = {}
         self.load_pieces()
         self.selected_piece = None
@@ -29,11 +38,22 @@ class GameEngine:
         'w_rook': ChessPiece(self.images['w_rook'], (4 * SQUARE_SIZE, 7 * SQUARE_SIZE))
     }
         
-    def draw_board(self):
-        self.screen.fill(WHITE)
+    def create_board(self):
+        self.board = []
+        chessboard_gen = chessboard_squares()
         for row in range(ROWS):
-            for col in range(row % 2, ROWS, 2):
-                pygame.draw.rect(self.screen, BLACK, (row * SQUARE_SIZE, col * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+            board_row = []
+            for col in range(COLS):
+                x = col * SQUARE_SIZE
+                y = row * SQUARE_SIZE
+                color = WHITE if (row + col) % 2 == 0 else BLACK
+                board_row.append(ChessSquare(x, y, color, next(chessboard_gen)))
+            self.board.append(board_row)
+        
+    def draw_board(self):
+        for row in self.board:
+            for square in row:
+                square.draw(self.screen)
                 
     def draw_pieces(self):
         for piece_obj in self.pieces.values():
@@ -44,11 +64,16 @@ class GameEngine:
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                for row in self.board:
+                    for square in row:
+                        if square.rect.collidepoint(x, y):
+                            print(square.label) 
                 for piece, piece_obj in self.pieces.items():
                     if piece_obj.rect.collidepoint(event.pos):
                         self.selected_piece = piece_obj
-                        self.offset_x = piece_obj.position[0] - event.pos[0]
-                        self.offset_y = piece_obj.position[1] - event.pos[1]
+                        self.offset_x = piece_obj.position[0] - x
+                        self.offset_y = piece_obj.position[1] - y
                         break
             elif event.type == pygame.MOUSEBUTTONUP:
                 if self.selected_piece:
