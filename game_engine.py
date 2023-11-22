@@ -52,6 +52,7 @@ class GameEngine:
                         if square.rect.collidepoint(x, y):
                             print(square.label)
                             print(square.occupied)
+                            print(square.SAN)
                             self.selected_square = square
                             if square.occupied:
                                 self.selected_piece = square.occupied
@@ -73,14 +74,19 @@ class GameEngine:
                                     # Additional logic for captures
                                 else:
                                     new_x, new_y = self.selected_piece.snap_to_grid(x, y)
-                                    print(self.selected_piece.row)
+                                    # print(self.selected_piece.row)
                                     self.selected_piece.row = new_x
-                                    print(new_x)
+                                    # print(new_x)
                                     self.selected_piece.column = new_y
                                     square.occupied = self.selected_piece
                                     self.selected_square.occupied = None
-                                    print(self.selected_square.SAN, square.SAN)
-                                    self.position.san(chess.Move(self.selected_square.SAN, square.SAN))
+                                    # print(self.selected_square.SAN, square.SAN)
+                                    san = self.position.san(chess.Move(self.selected_square.SAN, square.SAN))
+                                    # print(san)
+                                    san = self.position.parse_san(san)
+                                    self.position.push(san)
+                                    
+                                    print(self.position)
                                     # change chess module
                     self.selected_piece = None
                     self.selected_square = None
