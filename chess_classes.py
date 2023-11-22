@@ -26,20 +26,22 @@ class ChessPiece:
         self.position = new_position
         self.rect.x, self.rect.y = new_position
 
-    def snap_to_grid(self, offset):
-        # Calculate the center of the piece
-        piece_center_x = self.position[0] + SQUARE_SIZE // 2
-        piece_center_y = self.position[1] + SQUARE_SIZE // 2
+    def snap_to_grid(self, x, y):
+        # Calculate the center of the piece!
+        piece_center_x = x - SQUARE_SIZE // 2
+        piece_center_y = y - SQUARE_SIZE // 2
 
         # Find the nearest square center
-        nearest_col = round((piece_center_x + offset[0]) / SQUARE_SIZE)
-        nearest_row = round((piece_center_y + offset[1]) / SQUARE_SIZE)
+        nearest_col = round((piece_center_x) / SQUARE_SIZE)
+        nearest_row = round((piece_center_y) / SQUARE_SIZE)
 
         # Calculate the new position to snap to the center of the nearest square
         new_x = nearest_col * SQUARE_SIZE
         new_y = nearest_row * SQUARE_SIZE
 
         self.move((new_x, new_y))
+        
+        return nearest_row, nearest_col
 
 def chessboard_squares():
     files = 'abcdefgh'

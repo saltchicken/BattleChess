@@ -1,5 +1,6 @@
 import pygame, os
 import chess
+from PIL import Image, ImageFilter
 from chess_classes import ChessPiece, ChessBoard
 
 # TODO: Better way to declare this
@@ -26,6 +27,9 @@ class GameEngine:
         for index, piece in enumerate(board.__str__()):
             if piece.isalpha():
                 if piece.islower():
+                    # pil_blured = Image.open(os.path.join("images", piece + "_.png")).filter(ImageFilter.GaussianBlur(radius=6))
+                    # pygame_image = pygame.image.fromstring(pil_blured.tostring("raw", 'RGBA'), (SQUARE_SIZE, SQUARE_SIZE), 'RGBA')
+
                     self.images[piece] = pygame.transform.scale(pygame.image.load(os.path.join("images", piece + "_.png")), (SQUARE_SIZE, SQUARE_SIZE))
                 else:
                     self.images[piece] = pygame.transform.scale(pygame.image.load(os.path.join("images", piece + ".png")), (SQUARE_SIZE, SQUARE_SIZE))
@@ -51,24 +55,37 @@ class GameEngine:
                         if square.rect.collidepoint(x, y):
                             print(square.label)
                             print(square.occupied)
+                            self.selected_square = square
                             if square.occupied:
                                 self.selected_piece = square.occupied
-                                self.offset_x = square.occupied.position[0] - x
-                                self.offset_y = square.occupied.position[1] - y
+                                self.selected_piece.move((x - SQUARE_SIZE // 2, y - SQUARE_SIZE // 2)) 
+                                # self.offset_x = square.occupied.position[0] - x
+                                # self.offset_y = square.occupied.position[1] - y
             elif event.type == pygame.MOUSEBUTTONUP:
                 x, y = event.pos
                 if self.selected_piece:
                     for row in self.chessboard.board:
                         for square in row:
                             if square.rect.collidepoint(x, y):
+                                if square == self.selected_square:
+                                    print('huh')
+                                    self.selected_piece.move((self.selected_piece.column * SQUARE_SIZE, self.selected_piece.row * SQUARE_SIZE))
+                                    break
                                 if square.occupied:
                                     self.selected_piece.move((self.selected_piece.column * SQUARE_SIZE, self.selected_piece.row * SQUARE_SIZE))
                                     # Additional logic for captures
                                 else:
-                                    self.selected_piece.snap_to_grid((self.offset_x, self.offset_y))
-                                    # change row, column, and square ownership
+                                    new_x, new_y = self.selected_piece.snap_to_grid(x, y)
+                                    print(self.selected_piece.row)
+                                    self.selected_piece.row = new_x
+                                    print(new_x)
+                                    self.selected_piece.column = new_y
+                                    square.occupied = self.selected_piece
+                                    self.selected_square.occupied = None
+                                    # change chess module
                     self.selected_piece = None
+                    self.selected_square = None
             elif event.type == pygame.MOUSEMOTION:
                 if self.selected_piece:
                     mouse_x, mouse_y = event.pos
-                    self.selected_piece.move((mouse_x + self.offset_x, mouse_y + self.offset_y)) 
+                    self.selected_piece.move((mouse_x - SQUARE_SIZE // 2, mouse_y - SQUARE_SIZE // 2)) 
