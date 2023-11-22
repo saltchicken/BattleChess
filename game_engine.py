@@ -22,14 +22,11 @@ class GameEngine:
         self.offset_y = 0
         
     def load_pieces(self) -> None:
-        board = chess.Board()
+        self.position = chess.Board()
         # TODO Consider using board.piece_map()
-        for index, piece in enumerate(board.__str__()):
+        for index, piece in enumerate(self.position.__str__()):
             if piece.isalpha():
                 if piece.islower():
-                    # pil_blured = Image.open(os.path.join("images", piece + "_.png")).filter(ImageFilter.GaussianBlur(radius=6))
-                    # pygame_image = pygame.image.fromstring(pil_blured.tostring("raw", 'RGBA'), (SQUARE_SIZE, SQUARE_SIZE), 'RGBA')
-
                     self.images[piece] = pygame.transform.scale(pygame.image.load(os.path.join("images", piece + "_.png")), (SQUARE_SIZE, SQUARE_SIZE))
                 else:
                     self.images[piece] = pygame.transform.scale(pygame.image.load(os.path.join("images", piece + ".png")), (SQUARE_SIZE, SQUARE_SIZE))
@@ -82,6 +79,8 @@ class GameEngine:
                                     self.selected_piece.column = new_y
                                     square.occupied = self.selected_piece
                                     self.selected_square.occupied = None
+                                    print(self.selected_square.SAN, square.SAN)
+                                    self.position.san(chess.Move(self.selected_square.SAN, square.SAN))
                                     # change chess module
                     self.selected_piece = None
                     self.selected_square = None

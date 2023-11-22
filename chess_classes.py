@@ -44,7 +44,7 @@ class ChessPiece:
         return nearest_row, nearest_col
 
 def chessboard_squares():
-    files = 'abcdefgh'
+    files = 'ABCDEFGH'
     ranks = '12345678'
 
     for file in files:
@@ -64,7 +64,7 @@ class ChessBoard:
                 x = col * SQUARE_SIZE
                 y = row * SQUARE_SIZE
                 color = WHITE if (row + col) % 2 == 0 else BLACK
-                board_row.append(ChessSquare(x, y, color, next(chessboard_gen)))
+                board_row.append(ChessSquare(x, y, color, next(chessboard_gen), col + row * 8))
             self.board.append(board_row)
         
     def draw_board(self):
@@ -73,10 +73,11 @@ class ChessBoard:
                 square.draw(self.screen)
                 
 class ChessSquare:
-    def __init__(self, x, y, color, label):
+    def __init__(self, x, y, color, label, SAN):
         self.rect = pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE)
         self.color = color
         self.label = label
+        self.SAN = SAN
         self.occupied = None
 
     def draw(self, screen):
