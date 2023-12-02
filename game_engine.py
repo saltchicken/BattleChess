@@ -66,28 +66,30 @@ class GameEngine:
                         for square in row:
                             if square.rect.collidepoint(x, y):
                                 if square == self.selected_square:
-                                    print('huh')
                                     self.selected_piece.move((self.selected_piece.column * SQUARE_SIZE, self.selected_piece.row * SQUARE_SIZE))
                                     break
-                                if square.occupied:
-                                    self.selected_piece.move((self.selected_piece.column * SQUARE_SIZE, self.selected_piece.row * SQUARE_SIZE))
-                                    # Additional logic for captures
-                                else:
-                                    new_x, new_y = self.selected_piece.snap_to_grid(x, y)
-                                    # print(self.selected_piece.row)
-                                    self.selected_piece.row = new_x
-                                    # print(new_x)
-                                    self.selected_piece.column = new_y
-                                    square.occupied = self.selected_piece
-                                    self.selected_square.occupied = None
-                                    # print(self.selected_square.SAN, square.SAN)
+                                try:
                                     san = self.position.san(chess.Move(self.selected_square.SAN, square.SAN))
-                                    # print(san)
+                                    print('San: ', san)
                                     san = self.position.parse_san(san)
-                                    self.position.push(san)
                                     
-                                    print(self.position)
-                                    # change chess module
+                                    self.position.push(san)
+                                except:
+                                    self.selected_piece.move((self.selected_piece.column * SQUARE_SIZE, self.selected_piece.row * SQUARE_SIZE))
+                                    break
+                                # TODO Needs castling logic. Rook currently doesn't move
+                                
+                                
+                                if square.occupied:
+                                    self.pieces.remove(square.occupied)
+                                new_x, new_y = self.selected_piece.snap_to_grid(x, y)
+                                self.selected_piece.row = new_x
+                                self.selected_piece.column = new_y
+                                square.occupied = self.selected_piece
+                                self.selected_square.occupied = None
+                                    
+                                    
+                                print(self.position)
                     self.selected_piece = None
                     self.selected_square = None
             elif event.type == pygame.MOUSEMOTION:
